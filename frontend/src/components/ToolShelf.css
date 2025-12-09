@@ -1,0 +1,29 @@
+.v3s-toolshelf {
+  width: 64px;
+  border-right: none;
+  background: transparent; /* show only buttons over viewport */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  position: absolute;
+  top: 48px; /* below topbar */
+  left: 0;
+  bottom: auto;
+  z-index: 9;
+  pointer-events: none; /* let viewport receive events except on buttons */
+}
+.v3s-toolbtn {
+  height: 40px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);
+  background: linear-gradient(180deg, var(--surface-100), var(--surface-90));
+  pointer-events: auto;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.v3s-toolbtn:hover { box-shadow: var(--shadow-1); }
+.v3s-toolbtn--active { box-shadow: var(--shadow-2); border-color: rgba(0,0,0,0.12); }
+.v3s-toolbtn__icon {
+  color: var(--text-900);
+}

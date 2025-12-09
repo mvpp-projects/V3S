@@ -1,0 +1,44 @@
+.v3s-properties {
+  width: 320px;
+  position: absolute;
+  right: 0;
+  top: 64px; /* sit below topbar */
+  bottom: 16px; /* bring towards bottom a little */
+  background: transparent;
+  padding: var(--space-2);
+  pointer-events: none; /* let viewport interact except on sections */
+}
+
+.v3s-properties__stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.v3s-properties__section {
+  pointer-events: auto;
+}
+
+.v3s-dropdown__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: transparent;
+  border: none;
+  color: var(--text-900);
+  font-size: var(--type-sm);
+  padding: var(--space-2) 0;
+  cursor: pointer;
+}
+.v3s-dropdown__chev { display: inline-block; transition: transform 160ms ease; }
+.v3s-dropdown__chev.open { transform: rotate(90deg); }
+.v3s-dropdown__content { padding: 0 0 var(--space-2) var(--space-2); }
+.	v3s-formgrid { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+.v3s-formrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.v3s-formrow input {
+  height: 32px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
+  background: linear-gradient(180deg, var(--surface-100), var(--surface-90));
+  color: var(--text-900);
+  padding: 0 var(--space-2);
+}

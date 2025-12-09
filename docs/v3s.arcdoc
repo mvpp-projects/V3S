@@ -1,0 +1,89 @@
+# v3s Realtime Collaboration Architecture (.arcdoc)
+
+## Overview
+v3s supports true realtime collaboration where 2 or more users can simultaneously edit the same 3D scene. All changes are synchronized instantly via Socket.io with optimistic UI updates.
+
+---
+
+## Realtime System Components
+- **Frontend**
+  - React + Three.js rendering
+  - Zustand state store
+  - Socket.io client
+  - Local optimistic updates
+- **Backend**
+  - Express REST API
+  - Socket.io gateway
+  - Scene room manager (objects, transforms, presence)
+  - In-memory or Redis store
+- **Protocol**
+  - Event-based deltas: add, update, remove, select
+  - Presence events: join, leave, cursor, selection
+  - Snapshot on join
+
+---
+
+## Realtime Editing Flow
+1. User joins scene  
+2. Server sends full snapshot  
+3. User makes a change (add/update/remove/select)  
+4. Client applies optimistic update  
+5. Event is sent to server  
+6. Server validates + broadcasts to all other clients  
+7. All clients update their Zustand state  
+
+---
+
+## Socket.io Event Map
+### Scene Events
+- `scene:join`  
+- `scene:snapshot`  
+
+### Object Events
+- `object:add`  
+- `object:added`  
+- `object:update`  
+- `object:updated`  
+- `object:remove`  
+- `object:removed`  
+
+### Presence Events
+- `presence:join`  
+- `presence:left`  
+- `presence:cursor`  
+- `presence:select`  
+
+---
+
+## REST API
+- `GET /api/v1/scenes`
+- `POST /api/v1/scenes`
+- `GET /api/v1/scenes/:sceneId`
+
+---
+
+## File Structure
+
+backend/
+  src/
+    server.ts
+    sockets/sceneGateway.ts
+    core/roomManager.ts
+    api/
+      scenes.ts
+
+frontend/
+  src/
+    scene/SceneCanvas.tsx
+    state/sceneStore.ts
+    lib/socket.ts
+
+---
+
+## Realtime Guarantees
+- Live multi-user editing
+- Conflict-free last-write-wins merging
+- Per-user color-coded cursors + selections
+- High-frequency transform sync (throttled)
+- Snapshot consistency on joining
+

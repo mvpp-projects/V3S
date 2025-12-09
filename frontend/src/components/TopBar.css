@@ -1,0 +1,28 @@
+.v3s-topbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-3);
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: saturate(1.1) blur(8px);
+  border-bottom: 1px solid var(--muted-1);
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+}
+.v3s-topbar__left, .v3s-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.v3s-topbar__divider {
+  width: 1px; height: 24px; background: var(--muted-1);
+}
+.v3s-btn {
+  height: 32px; padding: 0 10px; border-radius: 6px; border: 1px solid transparent;
+  background: transparent; color: var(--text-900);
+}
+.v3s-btn--ghost { background: transparent; }
+.v3s-btn--accent { background: var(--accent-100); border-color: rgba(0,0,0,0.04); }
+.v3s-btn:hover { box-shadow: var(--shadow-1); }

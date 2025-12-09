@@ -1,0 +1,22 @@
+.v3s-panel {
+  background: linear-gradient(180deg, var(--surface-100), var(--surface-90));
+  box-shadow: var(--shadow-1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  position: relative;
+  border: 1px solid rgba(0,0,0,0.03);
+  overflow: hidden;
+}
+.v3s-panel::after {
+  content: '';
+  pointer-events: none;
+  position: absolute; inset: 0;
+  background-image: url('/assets/grain-small.png');
+  opacity: var(--grain-opacity);
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+.v3s-panel--subtle {
+  box-shadow: none;
+  background: var(--surface-100);
+}
