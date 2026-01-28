@@ -1,5 +1,5 @@
 .v3s-properties {
-  width: 320px;
+  width: 380px;
   position: absolute;
   right: 0;
   top: 64px; /* sit below topbar */
@@ -34,8 +34,8 @@
 .v3s-dropdown__chev { display: inline-block; transition: transform 160ms ease; }
 .v3s-dropdown__chev.open { transform: rotate(90deg); }
 .v3s-dropdown__content { padding: 0 0 var(--space-2) var(--space-2); }
-.	v3s-formgrid { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
-.v3s-formrow { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.v3s-formgrid { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+.v3s-formrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
 .v3s-formrow input {
   height: 32px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
   background: linear-gradient(180deg, var(--surface-100), var(--surface-90));

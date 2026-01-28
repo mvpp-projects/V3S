@@ -50,7 +50,6 @@ export default function ToolShelf() {
       props: { color: '#8b9ca7' }
     })
     selectObject(id)
-    setAxisConstraint('none')
   }
   const addSphere = () => {
     const id = `obj_${Math.random().toString(36).slice(2, 8)}`
@@ -62,30 +61,69 @@ export default function ToolShelf() {
     })
     selectObject(id)
   }
+  const addLight = () => {
+    const id = `obj_${Math.random().toString(36).slice(2, 8)}`
+    upsertObject({
+      id,
+      type: 'pointLight',
+      transform: { position: [0, 2, 0], rotation: [0, 0, 0], scale: [1, 1, 1] },
+      props: { color: '#ffffff', intensity: 1.5, distance: 0, decay: 2 }
+    })
+    selectObject(id)
+  }
   return (
     <nav className="v3s-toolshelf">
-      {tools.map(t => {
-        const active = (t.key === 'Move' && gizmoMode === 'translate') || (t.key === 'Rotate' && gizmoMode === 'rotate') || (t.key === 'Scale' && gizmoMode === 'scale')
+      {/* Transform tools */}
+      {tools.map((t) => {
+        const active =
+          (t.key === 'Move' && gizmoMode === 'translate') ||
+          (t.key === 'Rotate' && gizmoMode === 'rotate') ||
+          (t.key === 'Scale' && gizmoMode === 'scale')
         return (
-        <button key={t.key} className={`v3s-toolbtn ${active ? 'v3s-toolbtn--active' : ''}`} title={t.label} aria-label={t.label} onClick={t.onClick}>
-          <span className="v3s-toolbtn__icon" aria-hidden>{Icon[t.key]}</span>
-        </button>
-      )})}
+          <button
+            key={t.key}
+            className={`v3s-toolbtn ${active ? 'v3s-toolbtn--active' : ''}`}
+            title={t.label}
+            aria-label={t.label}
+            onClick={t.onClick}
+          >
+            <span className="v3s-toolbtn__icon" aria-hidden>
+              {Icon[t.key]}
+            </span>
+          </button>
+        )
+      })}
+
+      <div className="v3s-toolshelf__divider" />
+
+      {/* Primitives */}
       <button className="v3s-toolbtn" title="Add Cube" aria-label="Add Cube" onClick={addCube}>
-              {/* Axis locks removed per request */}
         <span className="v3s-toolbtn__icon" aria-hidden>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="6" y="6" width="12" height="12" stroke="currentColor" strokeWidth="1.5" />
           </svg>
         </span>
       </button>
       <button className="v3s-toolbtn" title="Add Sphere" aria-label="Add Sphere" onClick={addSphere}>
         <span className="v3s-toolbtn__icon" aria-hidden>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" />
           </svg>
         </span>
       </button>
+
+      <button className="v3s-toolbtn" title="Add Light" aria-label="Add Light" onClick={addLight}>
+        <span className="v3s-toolbtn__icon" aria-hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="9" r="3" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M9 14h6" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M10 16h4v2a2 2 0 01-2 2 2 2 0 01-2-2v-2z" stroke="currentColor" strokeWidth="1.5" />
+          </svg>
+        </span>
+      </button>
+
+      <div className="v3s-toolshelf__divider" />
+
       {/* Duplicate / Delete */}
       <button className="v3s-toolbtn" title="Duplicate (Shift+D)" aria-label="Duplicate" onClick={() => {
         const sel = useSceneStore.getState().selectedId
@@ -106,7 +144,7 @@ export default function ToolShelf() {
         selectObject(id)
       }}>
         <span className="v3s-toolbtn__icon" aria-hidden>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="5" y="7" width="10" height="10" stroke="currentColor" strokeWidth="1.5" />
             <rect x="9" y="11" width="10" height="10" stroke="currentColor" strokeWidth="1.5" opacity="0.6" />
           </svg>
@@ -119,7 +157,7 @@ export default function ToolShelf() {
         selectObject(null)
       }}>
         <span className="v3s-toolbtn__icon" aria-hidden>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" fill="currentColor" />
             <path d="M6 9h12l-1 10H7L6 9z" stroke="currentColor" strokeWidth="1.5" />
           </svg>

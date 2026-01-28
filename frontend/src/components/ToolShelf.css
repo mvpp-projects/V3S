@@ -1,29 +1,59 @@
 .v3s-toolshelf {
-  width: 64px;
-  border-right: none;
-  background: transparent; /* show only buttons over viewport */
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 9;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  position: absolute;
-  top: 48px; /* below topbar */
-  left: 0;
-  bottom: auto;
-  z-index: 9;
-  pointer-events: none; /* let viewport receive events except on buttons */
-}
-.v3s-toolbtn {
-  height: 40px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.05);
-  background: linear-gradient(180deg, var(--surface-100), var(--surface-90));
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,246,243,0.96));
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
   pointer-events: auto;
-  width: 40px;
+}
+
+.v3s-toolshelf__divider {
+  width: 60%;
+  height: 1px;
+  background: rgba(15, 23, 42, 0.08);
+  margin: 4px 0;
+}
+
+.v3s-toolbtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background-color 120ms ease, box-shadow 120ms ease, transform 80ms ease;
 }
-.v3s-toolbtn:hover { box-shadow: var(--shadow-1); }
-.v3s-toolbtn--active { box-shadow: var(--shadow-2); border-color: rgba(0,0,0,0.12); }
+
+.v3s-toolbtn:hover {
+  background: rgba(15, 23, 42, 0.04);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.v3s-toolbtn--active {
+  background: rgba(19, 94, 180, 0.12);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+}
+
+.v3s-toolbtn--active .v3s-toolbtn__icon {
+  color: var(--presence-blue);
+}
+
+.v3s-toolbtn:active {
+  transform: translateY(1px);
+}
+
 .v3s-toolbtn__icon {
   color: var(--text-900);
 }

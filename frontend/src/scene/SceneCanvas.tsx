@@ -14,6 +14,7 @@ export default function SceneCanvas() {
   const gizmoMode = useSceneStore((s) => s.gizmoMode)
   const selectObject = useSceneStore((s) => s.selectObject)
   const updateTransform = useSceneStore((s) => s.updateTransform)
+  const lighting = useSceneStore((s) => s.lighting)
   const { getPresenceColor } = useTheme()
 
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null)
@@ -22,8 +23,38 @@ export default function SceneCanvas() {
   const orbitRef = useRef<OrbitControls | null>(null)
   const tControlsRef = useRef<TransformControls | null>(null)
   const meshByIdRef = useRef<Record<string, THREE.Object3D>>( {})
+  const selectionOutlineRef = useRef<THREE.LineSegments | null>(null)
   const raycasterRef = useRef<THREE.Raycaster | null>(null)
   const resizeObserverRef = useRef<ResizeObserver | null>(null)
+  const ambientLightRef = useRef<THREE.AmbientLight | null>(null)
+  const dirLightRef = useRef<THREE.DirectionalLight | null>(null)
+
+  const createMaterialForObject = (o: any) => {
+    const props = o.props ?? {}
+    const fallbackColor = o.type === 'cube' ? '#8b9ca7' : '#9aa8a0'
+    const colorHex = (props.baseColor as string) ?? (props.color as string) ?? fallbackColor
+    const roughness = typeof props.roughness === 'number' ? props.roughness : 0.5
+    const metalness = typeof props.metalness === 'number' ? props.metalness : 0.0
+    return new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex), roughness, metalness })
+  }
+
+  const createPointLightMesh = (o: any) => {
+    const props = o.props ?? {}
+    const colorHex = (props.color as string) ?? '#ffffff'
+    const intensity = typeof props.intensity === 'number' ? props.intensity : 1.5
+    const distance = typeof props.distance === 'number' ? props.distance : 0
+    const decay = typeof props.decay === 'number' ? props.decay : 2
+
+    const lightColor = new THREE.Color(colorHex)
+    const light = new THREE.PointLight(lightColor, intensity, distance, decay)
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(0.15, 16, 16),
+      new THREE.MeshBasicMaterial({ color: lightColor })
+    )
+    mesh.userData.light = light
+    mesh.add(light)
+    return mesh
+  }
 
   useEffect(() => {
     const container = containerRef.current
@@ -32,7 +63,8 @@ export default function SceneCanvas() {
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
-    renderer.setClearColor(0xF3EEE6)
+    // Darker, slightly cool background
+    renderer.setClearColor(0x1f242b)
     renderer.domElement.style.width = '100%'
     renderer.domElement.style.height = '100%'
     container.appendChild(renderer.domElement)
@@ -52,9 +84,18 @@ export default function SceneCanvas() {
     controls.target.set(0, 0, 0)
     orbitRef.current = controls
 
-    // TransformControls
+    // TransformControls (Blender-style gizmo)
     const tControls = new TransformControls(camera, renderer.domElement)
-    tControls.setSize(0.9)
+    // Add the visual helper (an Object3D) to the scene so the gizmo is rendered
+    const tHelper = (tControls as any).getHelper ? (tControls as any).getHelper() : null
+    if (tHelper) {
+      scene.add(tHelper)
+    }
+    tControls.setSize(1.0) // slightly smaller gizmo size
+    tControls.showX = true
+    tControls.showY = true
+    tControls.showZ = true
+    ;(window as any).v3sTControls = tControls // debug handle if needed
     tControls.addEventListener('dragging-changed', (e: any) => {
       controls.enabled = !e.value
     })
@@ -72,16 +113,19 @@ export default function SceneCanvas() {
     tControlsRef.current = tControls
 
     // Lights
-    const amb = new THREE.AmbientLight(0xffffff, 0.8)
+    const amb = new THREE.AmbientLight(0xffffff, lighting.ambientIntensity)
     scene.add(amb)
-    const dir = new THREE.DirectionalLight(0xffffff, 0.6)
+    ambientLightRef.current = amb
+    const dir = new THREE.DirectionalLight(0xffffff, lighting.directionalIntensity)
     dir.position.set(5, 10, 7)
     scene.add(dir)
+    dirLightRef.current = dir
 
     // Grid (shader material)
     const gridUniforms = {
-      uColor: { value: new THREE.Color(0xE6E0D8) },
-      uMajorColor: { value: new THREE.Color(0x7FAFB2) },
+      // Dark grid on dark background
+      uColor: { value: new THREE.Color(0x2b323a) },
+      uMajorColor: { value: new THREE.Color(0x4f9ac5) },
       uCamPos: { value: new THREE.Vector3() },
       uScale: { value: 1.0 },
       uThickness: { value: 0.005 },
@@ -141,18 +185,24 @@ export default function SceneCanvas() {
     // Helper: build initial meshes from store snapshot
     const meshById = meshByIdRef.current
     const buildMesh = (o: any) => {
-      let mesh: THREE.Mesh
+      let mesh: THREE.Object3D
       if (o.type === 'cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: 0x8b9ca7 }))
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), createMaterialForObject(o))
+      } else if (o.type === 'sphere') {
+        mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), createMaterialForObject(o))
+      } else if (o.type === 'pointLight') {
+        mesh = createPointLightMesh(o)
       } else {
-        mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), new THREE.MeshStandardMaterial({ color: 0x9aa8a0 }))
+        return
       }
       mesh.position.set(o.transform.position[0], o.transform.position[1], o.transform.position[2])
       mesh.rotation.set(o.transform.rotation[0], o.transform.rotation[1], o.transform.rotation[2])
       mesh.scale.set(o.transform.scale[0], o.transform.scale[1], o.transform.scale[2])
       mesh.userData.id = o.id
-      mesh.castShadow = false
-      mesh.receiveShadow = true
+      if (mesh instanceof THREE.Mesh) {
+        mesh.castShadow = false
+        mesh.receiveShadow = true
+      }
       meshById[o.id] = mesh
       scene.add(mesh)
     }
@@ -162,8 +212,15 @@ export default function SceneCanvas() {
     const raycaster = new THREE.Raycaster()
     raycasterRef.current = raycaster
 
-    // Pointer down -> pick
+    // Pointer down -> pick (but ignore when gizmo is being used)
     const handlePointerDown = (ev: MouseEvent) => {
+      // If TransformControls has captured this interaction (hovering/dragging gizmo),
+      // do not run our object picking logic, otherwise we break gizmo dragging.
+      const tControls = tControlsRef.current as any
+      if (tControls && (tControls.dragging || tControls.axis)) {
+        return
+      }
+
       if (!rendererRef.current || !cameraRef.current) return
       const rect = rendererRef.current.domElement.getBoundingClientRect()
       const x = ((ev.clientX - rect.left) / rect.width) * 2 - 1
@@ -172,10 +229,16 @@ export default function SceneCanvas() {
       const meshes = Object.values(meshByIdRef.current)
       const intersects = raycaster.intersectObjects(meshes, true)
       if (intersects.length > 0) {
-        const target = intersects[0].object
-        const id = (target as any).userData?.id
+        let target: THREE.Object3D | null = intersects[0].object
+        // Walk up to find the object that carries our id (handles child hits)
+        while (target && !(target as any).userData?.id) {
+          target = target.parent
+        }
+        const id = (target as any)?.userData?.id
+        console.log('[v3s] click hit object, id =', id)
         selectObject(id ?? null)
       } else {
+        console.log('[v3s] click hit nothing, clearing selection')
         selectObject(null)
       }
     }
@@ -286,7 +349,15 @@ export default function SceneCanvas() {
       ro.disconnect()
       resizeObserverRef.current = null
       try { controls.dispose() } catch {}
-      try { tControls.dispose() } catch {}
+      try {
+        // Remove gizmo helper from scene and dispose
+        const helper = (tControls as any).getHelper ? (tControls as any).getHelper() : null
+        if (helper) {
+          scene.remove(helper)
+        }
+        tControls.detach()
+        tControls.dispose()
+      } catch {}
       // dispose meshes / geometries / materials we created
       Object.values(meshByIdRef.current).forEach((m) => {
         if (m instanceof THREE.Mesh) {
@@ -311,8 +382,28 @@ export default function SceneCanvas() {
       orbitRef.current = null
       tControlsRef.current = null
       raycasterRef.current = null
+      if (selectionOutlineRef.current) {
+        try {
+          scene.remove(selectionOutlineRef.current)
+        } catch {}
+        const geo = selectionOutlineRef.current.geometry as THREE.BufferGeometry | null
+        const mat = selectionOutlineRef.current.material as THREE.Material | null
+        if (geo) geo.dispose()
+        if (mat) mat.dispose()
+        selectionOutlineRef.current = null
+      }
     }
   }, []) // mount only
+
+  // React to lighting changes
+  useEffect(() => {
+    if (ambientLightRef.current) {
+      ambientLightRef.current.intensity = lighting.ambientIntensity
+    }
+    if (dirLightRef.current) {
+      dirLightRef.current.intensity = lighting.directionalIntensity
+    }
+  }, [lighting])
 
   // Sync meshes when objects change (in-place updates)
   useEffect(() => {
@@ -342,15 +433,57 @@ export default function SceneCanvas() {
 
     // Add or update
     Object.values(storeObjs).forEach((o) => {
-      let mesh = meshes[o.id] as THREE.Mesh | undefined
+      let mesh = meshes[o.id] as THREE.Object3D | undefined
       if (!mesh) {
-        if (o.type === 'cube') mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshStandardMaterial({ color: 0x8b9ca7 }))
-        else mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), new THREE.MeshStandardMaterial({ color: 0x9aa8a0 }))
+        if (o.type === 'cube') {
+          mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), createMaterialForObject(o))
+        } else if (o.type === 'sphere') {
+          mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), createMaterialForObject(o))
+        } else if (o.type === 'pointLight') {
+          mesh = createPointLightMesh(o)
+        } else {
+          return
+        }
         mesh.userData.id = o.id
-        mesh.receiveShadow = true
+        if (mesh instanceof THREE.Mesh) {
+          mesh.receiveShadow = true
+        }
         meshes[o.id] = mesh
         scene.add(mesh)
       }
+
+      if (o.type === 'cube' || o.type === 'sphere') {
+        if (mesh instanceof THREE.Mesh) {
+          const props = o.props ?? {}
+          const fallbackColor = o.type === 'cube' ? '#8b9ca7' : '#9aa8a0'
+          const colorHex = (props.baseColor as string) ?? (props.color as string) ?? fallbackColor
+          const roughness = typeof props.roughness === 'number' ? props.roughness : 0.5
+          const metalness = typeof props.metalness === 'number' ? props.metalness : 0.0
+          const mat = mesh.material
+          if (!Array.isArray(mat) && mat instanceof THREE.MeshStandardMaterial) {
+            mat.color.set(colorHex)
+            mat.roughness = roughness
+            mat.metalness = metalness
+          }
+        }
+      } else if (o.type === 'pointLight') {
+        const props = o.props ?? {}
+        const colorHex = (props.color as string) ?? '#ffffff'
+        const intensity = typeof props.intensity === 'number' ? props.intensity : 1.5
+        const distance = typeof props.distance === 'number' ? props.distance : 0
+        const decay = typeof props.decay === 'number' ? props.decay : 2
+        const light = (mesh as any).userData?.light as THREE.PointLight | undefined
+        if (light) {
+          light.color.set(colorHex)
+          light.intensity = intensity
+          light.distance = distance
+          light.decay = decay
+        }
+        if (mesh instanceof THREE.Mesh && mesh.material instanceof THREE.MeshBasicMaterial) {
+          mesh.material.color.set(colorHex)
+        }
+      }
+
       mesh.position.set(o.transform.position[0], o.transform.position[1], o.transform.position[2])
       mesh.rotation.set(o.transform.rotation[0], o.transform.rotation[1], o.transform.rotation[2])
       mesh.scale.set(o.transform.scale[0], o.transform.scale[1], o.transform.scale[2])
@@ -360,12 +493,51 @@ export default function SceneCanvas() {
   // Attach/detach selection without reinit
   useEffect(() => {
     const tControls = tControlsRef.current
-    if (!tControls) return
+    const scene = sceneRef.current
+    if (!tControls || !scene) return
+
+    // Clear previous outline, if any
+    if (selectionOutlineRef.current) {
+      try {
+        scene.remove(selectionOutlineRef.current)
+      } catch {}
+      const geo = selectionOutlineRef.current.geometry as THREE.BufferGeometry | null
+      const mat = selectionOutlineRef.current.material as THREE.Material | null
+      if (geo) geo.dispose()
+      if (mat) mat.dispose()
+      selectionOutlineRef.current = null
+    }
+
     const id = selectedId
     if (id) {
+      // Whenever a new object is selected, ensure all axes are visible
+      // so any previous X/Y/Z axis lock is cleared.
+      tControls.showX = true
+      tControls.showY = true
+      tControls.showZ = true
       const target = meshByIdRef.current[id]
-      if (target) tControls.attach(target)
+      if (target) {
+        console.log('[v3s] attaching gizmo to', id, target)
+        tControls.attach(target)
+
+        // Add edge highlight around selected mesh
+        if (target instanceof THREE.Mesh) {
+          const edgesGeo = new THREE.EdgesGeometry(target.geometry as THREE.BufferGeometry)
+          const edgesMat = new THREE.LineBasicMaterial({ color: 0x00aaff })
+          const outline = new THREE.LineSegments(edgesGeo, edgesMat)
+          outline.position.copy(target.position)
+          outline.rotation.copy(target.rotation)
+          outline.scale.copy(target.scale)
+          scene.add(outline)
+          selectionOutlineRef.current = outline
+        }
+      }
     } else {
+      console.log('[v3s] detaching gizmo (no selection)')
+      // No selection -> reset axes so next selection starts unlocked
+      tControls.showX = true
+      tControls.showY = true
+      tControls.showZ = true
       tControls.detach()
     }
   }, [selectedId])
