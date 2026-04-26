@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { useSceneStore } from '../state/sceneStore'
 import { CursorOverlay } from '../components'
 import { useTheme } from '../theme/ThemeProvider'
+import { sendCursorPresence } from '../lib/sceneSync'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js'
@@ -242,7 +243,16 @@ export default function SceneCanvas() {
         selectObject(null)
       }
     }
+    const handlePointerMove = (ev: MouseEvent) => {
+      if (!rendererRef.current) return
+      const rect = rendererRef.current.domElement.getBoundingClientRect()
+      if (rect.width <= 0 || rect.height <= 0) return
+      const x = ((ev.clientX - rect.left) / rect.width) * 100
+      const y = ((ev.clientY - rect.top) / rect.height) * 100
+      sendCursorPresence(Math.max(0, Math.min(100, x)), Math.max(0, Math.min(100, y)))
+    }
     renderer.domElement.addEventListener('pointerdown', handlePointerDown)
+    renderer.domElement.addEventListener('pointermove', handlePointerMove)
 
     // Resize handling: ResizeObserver ensures container-driven sizing
     const onResize = () => {
@@ -346,6 +356,7 @@ export default function SceneCanvas() {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
       renderer.domElement.removeEventListener('pointerdown', handlePointerDown)
+      renderer.domElement.removeEventListener('pointermove', handlePointerMove)
       ro.disconnect()
       resizeObserverRef.current = null
       try { controls.dispose() } catch {}

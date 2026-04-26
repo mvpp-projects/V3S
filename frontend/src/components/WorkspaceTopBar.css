@@ -1,0 +1,57 @@
+.v3s-workspace-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 var(--space-3);
+  background: rgba(253, 250, 246, 0.95);
+  border-bottom: 1px solid var(--muted-1);
+  backdrop-filter: blur(8px);
+}
+
+.v3s-workspace-topbar__left,
+.v3s-workspace-topbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.v3s-topbar__divider {
+  width: 1px;
+  height: 18px;
+  background: var(--muted-1);
+}
+
+.scene-chip,
+.user-chip {
+  font-size: var(--type-xs);
+  color: var(--text-600);
+  background: var(--surface-90);
+  border: 1px solid var(--muted-1);
+  border-radius: 999px;
+  padding: 6px 10px;
+}
+
+.v3s-btn {
+  border: 1px solid var(--muted-1);
+  background: var(--surface-100);
+  color: var(--text-900);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.v3s-btn--ghost {
+  background: transparent;
+}
+
+.v3s-btn--accent {
+  border-color: transparent;
+  background: linear-gradient(135deg, #3f6c7b, #4a8f80);
+  color: #f6f4ef;
+}
+
+.v3s-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

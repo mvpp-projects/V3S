@@ -3,6 +3,7 @@ import { Panel } from './components'
 import SceneCanvas from './scene/SceneCanvas'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { TopBar, ToolShelf, PropertiesPanel } from './components'
+import { initSceneSync } from './lib/sceneSync'
 
 const mockPresences = [
   { userId: 'u1', x: 30, y: 40, color: 'var(--presence-blue)', initials: 'AL' },
@@ -10,6 +11,10 @@ const mockPresences = [
 ]
 
 export default function AppExample() {
+  React.useEffect(() => {
+    void initSceneSync()
+  }, [])
+
   return (
     <ThemeProvider>
       <div className="app-shell" style={{ flexDirection: 'column' }}>

@@ -6,6 +6,9 @@ export type Object3D = {
   type: 'cube' | 'sphere' | 'pointLight'
   transform: { position: number[]; rotation: number[]; scale: number[] }
   props?: Record<string, any>
+  version?: number
+  updatedAt?: string
+  updatedBy?: string
 }
 
 export type Presence = { userId: string; cursor?: { x: number; y: number }; selection?: string[]; color?: string }
@@ -24,6 +27,7 @@ type SceneState = {
   presence: Record<string, Presence>
   lighting: LightingState
   setSnapshot: (objects: Record<string, Object3D>) => void
+  setCurrentSceneId: (sceneId: string | null) => void
   upsertObject: (obj: Object3D) => void
   removeObject: (id: string) => void
   selectObject: (id: string | null) => void
@@ -31,6 +35,7 @@ type SceneState = {
   setGizmoMode: (mode: 'translate' | 'rotate' | 'scale') => void
   setAxisConstraint: (axis: 'none' | 'x' | 'y' | 'z') => void
   setPresence: (p: Presence) => void
+  removePresence: (userId: string) => void
   setLighting: (lighting: Partial<LightingState>) => void
 }
 
@@ -46,15 +51,26 @@ export const useSceneStore = create<SceneState>((set) => ({
      directionalIntensity: 0.6
    },
   setSnapshot: (objects) => set({ objects }),
+  setCurrentSceneId: (sceneId) => set({ currentSceneId: sceneId }),
   upsertObject: (obj) => set((s) => ({ objects: { ...s.objects, [obj.id]: obj } })),
   removeObject: (id) => set((s) => {
     const { [id]: _, ...rest } = s.objects
     return { objects: rest }
   }),
   selectObject: (id) => set({ selectedId: id }),
-  updateTransform: (id, transform) => set((s) => ({ objects: { ...s.objects, [id]: { ...s.objects[id], transform } } })),
+  updateTransform: (id, transform) => set((s) => {
+    const existing = s.objects[id]
+    if (!existing) {
+      return s
+    }
+    return { objects: { ...s.objects, [id]: { ...existing, transform } } }
+  }),
   setGizmoMode: (mode) => set({ gizmoMode: mode }),
   setAxisConstraint: (axis) => set({ axisConstraint: axis }),
   setPresence: (p) => set((s) => ({ presence: { ...s.presence, [p.userId]: p } })),
+  removePresence: (userId) => set((s) => {
+    const { [userId]: _, ...rest } = s.presence
+    return { presence: rest }
+  }),
   setLighting: (lighting) => set((s) => ({ lighting: { ...s.lighting, ...lighting } }))
 }))
