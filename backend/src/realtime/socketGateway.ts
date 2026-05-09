@@ -70,7 +70,7 @@ function ensureSceneAccess(socket: Socket<ClientToServerEvents, ServerToClientEv
 export function createSocketGateway(httpServer: HttpServer): Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData> {
   const io = new Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>(httpServer, {
     cors: {
-      origin: config.frontendOrigins,
+      origin: true,
       credentials: true
     }
   });

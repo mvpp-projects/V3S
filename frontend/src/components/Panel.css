@@ -1,22 +1,23 @@
 .v3s-panel {
-  background: linear-gradient(180deg, var(--surface-100), var(--surface-90));
+  background: rgba(255, 255, 255, 0.78);
   box-shadow: var(--shadow-1);
   border-radius: var(--radius-lg);
   padding: var(--space-3);
   position: relative;
-  border: 1px solid rgba(0,0,0,0.03);
+  border: 1px solid rgba(215, 222, 231, 0.85);
   overflow: hidden;
+  backdrop-filter: blur(18px) saturate(1.2);
 }
 .v3s-panel::after {
   content: '';
   pointer-events: none;
   position: absolute; inset: 0;
-  background-image: url('/assets/grain-small.png');
+  background-image: linear-gradient(120deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
   opacity: var(--grain-opacity);
   mix-blend-mode: overlay;
   border-radius: inherit;
 }
 .v3s-panel--subtle {
   box-shadow: none;
-  background: var(--surface-100);
+  background: rgba(255, 255, 255, 0.62);
 }

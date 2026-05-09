@@ -4,9 +4,9 @@
   justify-content: space-between;
   height: 56px;
   padding: 0 var(--space-3);
-  background: rgba(253, 250, 246, 0.95);
-  border-bottom: 1px solid var(--muted-1);
-  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.76);
+  border-bottom: 1px solid rgba(215, 222, 231, 0.85);
+  backdrop-filter: blur(18px) saturate(1.2);
 }
 
 .v3s-workspace-topbar__left,
@@ -26,32 +26,39 @@
 .user-chip {
   font-size: var(--type-xs);
   color: var(--text-600);
-  background: var(--surface-90);
-  border: 1px solid var(--muted-1);
-  border-radius: 999px;
-  padding: 6px 10px;
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(215, 222, 231, 0.85);
+  border-radius: var(--radius-pill);
+  padding: 7px 11px;
+  font-family: var(--mono-stack);
 }
 
 .v3s-btn {
-  border: 1px solid var(--muted-1);
-  background: var(--surface-100);
+  border: 1px solid rgba(215, 222, 231, 0.95);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--text-900);
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  padding: 8px 14px;
   cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease;
 }
 
 .v3s-btn--ghost {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.02);
 }
 
 .v3s-btn--accent {
   border-color: transparent;
-  background: linear-gradient(135deg, #3f6c7b, #4a8f80);
-  color: #f6f4ef;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #f8fafc;
 }
 
 .v3s-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.v3s-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-1);
 }

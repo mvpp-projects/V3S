@@ -1,22 +1,25 @@
 .v3s-properties {
   width: 380px;
   position: absolute;
-  right: 0;
-  top: 64px; /* sit below topbar */
-  bottom: 16px; /* bring towards bottom a little */
+  right: 16px;
+  top: 72px;
+  bottom: 16px;
   background: transparent;
-  padding: var(--space-2);
-  pointer-events: none; /* let viewport interact except on sections */
+  padding: 0;
+  pointer-events: none;
 }
 
 .v3s-properties__stack {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  height: 100%;
 }
 
 .v3s-properties__section {
   pointer-events: auto;
+  height: 100%;
+  overflow: auto;
 }
 
 .v3s-dropdown__header {
@@ -24,21 +27,40 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  background: transparent;
-  border: none;
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid rgba(215, 222, 231, 0.85);
+  border-radius: var(--radius-sm);
   color: var(--text-900);
   font-size: var(--type-sm);
-  padding: var(--space-2) 0;
+  padding: 10px 12px;
   cursor: pointer;
+  text-align: left;
 }
 .v3s-dropdown__chev { display: inline-block; transition: transform 160ms ease; }
 .v3s-dropdown__chev.open { transform: rotate(90deg); }
-.v3s-dropdown__content { padding: 0 0 var(--space-2) var(--space-2); }
-.v3s-formgrid { display: grid; grid-template-columns: 1fr; gap: var(--space-2); }
+.v3s-dropdown__content { padding: 12px 4px 14px; }
+.v3s-formgrid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.v3s-formgrid > label {
+  color: var(--text-600);
+  font-size: var(--type-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
 .v3s-formrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
 .v3s-formrow input {
-  height: 32px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
-  background: linear-gradient(180deg, var(--surface-100), var(--surface-90));
+  height: 36px;
+  border-radius: var(--radius-xs);
+  border: 1px solid rgba(215, 222, 231, 0.95);
+  background: rgba(255, 255, 255, 0.9);
   color: var(--text-900);
   padding: 0 var(--space-2);
+}
+
+.v3s-formrow input[type='color'] {
+  padding: 4px;
+  min-height: 36px;
+}
+
+.v3s-properties .v3s-panel {
+  height: 100%;
 }

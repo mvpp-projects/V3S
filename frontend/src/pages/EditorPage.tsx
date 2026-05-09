@@ -68,7 +68,7 @@ export default function EditorPage({ sceneId, navigate }: Props) {
   }, [navigate]);
 
   return (
-    <div className="app-shell" style={{ flexDirection: "column" }}>
+    <div className="app-shell editor-shell">
       <WorkspaceTopBar
         sceneId={sceneId}
         userName={user?.displayName || "User"}
@@ -79,9 +79,9 @@ export default function EditorPage({ sceneId, navigate }: Props) {
       />
       {shareLink && <div className="share-banner">Invite link copied: <a href={shareLink}>{shareLink}</a></div>}
       {error && <div className="share-banner error">{error}</div>}
-      <div style={{ display: "flex", flex: 1 }}>
+      <div className="editor-workspace">
         <ToolShelf />
-        <main style={{ flex: 1, position: "relative", background: "linear-gradient(180deg, #fff, #fbfaf9)" }}>
+        <main className="editor-canvas">
           {ready ? <SceneCanvas /> : <div className="editor-loading">Connecting to scene...</div>}
         </main>
         <PropertiesPanel />

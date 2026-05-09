@@ -1,6 +1,10 @@
 @import './tokens.css';
 @import './pages.css';
 
+* {
+  box-sizing: border-box;
+}
+
 html, body, #root {
   height: 100%;
 }
@@ -9,13 +13,59 @@ body {
   margin: 0;
   font-family: var(--font-stack);
   font-size: var(--type-md);
+  line-height: 1.5;
   color: var(--text-900);
-  background: var(--bg-100);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.10), transparent 28%),
+    radial-gradient(circle at top right, rgba(125, 211, 252, 0.12), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, var(--bg-100) 42%, #e8edf4 100%);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.16);
+}
+
 .app-shell {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.editor-shell {
+  flex-direction: column;
+}
+
+.editor-workspace {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-canvas {
+  flex: 1;
+  position: relative;
+  background:
+    radial-gradient(circle at center top, rgba(255, 255, 255, 0.7), transparent 40%),
+    linear-gradient(180deg, #f9fbfe 0%, #eef3f8 100%);
+}
+
+.scene-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }

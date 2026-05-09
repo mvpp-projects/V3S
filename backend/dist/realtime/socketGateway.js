@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createSocketGateway = createSocketGateway;
 const socket_io_1 = require("socket.io");
 const tokenService_1 = require("../auth/tokenService");
-const config_1 = require("../config");
 const inMemoryStore_1 = require("../store/inMemoryStore");
 const schemas_1 = require("../validation/schemas");
 function canWrite(role) {
@@ -15,7 +14,7 @@ function ensureSceneAccess(socket, sceneId) {
 function createSocketGateway(httpServer) {
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: config_1.config.frontendOrigins,
+            origin: true,
             credentials: true
         }
     });

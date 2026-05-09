@@ -64,8 +64,8 @@ export default function SceneCanvas() {
     // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
-    // Darker, slightly cool background
-    renderer.setClearColor(0x1f242b)
+    // Light neutral background to match the minimal shell
+    renderer.setClearColor(0xf1f5f9)
     renderer.domElement.style.width = '100%'
     renderer.domElement.style.height = '100%'
     container.appendChild(renderer.domElement)
@@ -124,15 +124,15 @@ export default function SceneCanvas() {
 
     // Grid (shader material)
     const gridUniforms = {
-      // Dark grid on dark background
-      uColor: { value: new THREE.Color(0x2b323a) },
-      uMajorColor: { value: new THREE.Color(0x4f9ac5) },
+      // Soft grid on a light background
+      uColor: { value: new THREE.Color(0xd7dee7) },
+      uMajorColor: { value: new THREE.Color(0x93c5fd) },
       uCamPos: { value: new THREE.Vector3() },
       uScale: { value: 1.0 },
-      uThickness: { value: 0.005 },
+      uThickness: { value: 0.004 },
       uMajorStep: { value: 10.0 },
-      uMinorOpacity: { value: 0.38 },
-      uMajorOpacity: { value: 0.78 }
+      uMinorOpacity: { value: 0.26 },
+      uMajorOpacity: { value: 0.55 }
     }
     const gridMaterial = new THREE.ShaderMaterial({
       transparent: true,
@@ -570,7 +570,7 @@ export default function SceneCanvas() {
   }))
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', height: '100%', width: '100%' }}>
+    <div ref={containerRef} className="scene-canvas">
       <CursorOverlay presences={pres as any} />
     </div>
   )
