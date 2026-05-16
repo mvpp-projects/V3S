@@ -1,5 +1,6 @@
 import React from "react";
 import "./WorkspaceTopBar.css";
+import { Button } from "./ui";
 
 type Props = {
   sceneId: string;
@@ -14,17 +15,17 @@ export default function WorkspaceTopBar({ sceneId, userName, sharing, onBack, on
   return (
     <header className="v3s-workspace-topbar">
       <div className="v3s-workspace-topbar__left">
-        <button className="v3s-btn v3s-btn--ghost" onClick={onBack} type="button">Scenes</button>
+        <Button variant="ghost" size="md" onClick={onBack}>Scenes</Button>
         <strong>v3s</strong>
         <span className="v3s-topbar__divider" />
         <span className="scene-chip">{sceneId}</span>
       </div>
       <div className="v3s-workspace-topbar__right">
         <span className="user-chip">{userName}</span>
-        <button className="v3s-btn v3s-btn--accent" onClick={onShare} type="button" disabled={sharing}>
+        <Button variant="accent" size="md" onClick={onShare} disabled={sharing}>
           {sharing ? "Sharing..." : "Share Invite"}
-        </button>
-        <button className="v3s-btn v3s-btn--ghost" onClick={onLogout} type="button">Logout</button>
+        </Button>
+        <Button variant="ghost" size="md" onClick={onLogout}>Logout</Button>
       </div>
     </header>
   );

@@ -1,5 +1,6 @@
 import React from 'react'
 import './ToolShelf.css'
+import { Button } from './ui'
 import { useSceneStore } from '../state/sceneStore'
 
 const Icon = {
@@ -31,7 +32,7 @@ const Icon = {
 }
 
 export default function ToolShelf() {
-  const upsertObject = useSceneStore(s => s.upsertObject)
+  const executeCommand = useSceneStore(s => s.executeCommand)
   const selectObject = useSceneStore(s => s.selectObject)
   const gizmoMode = useSceneStore(s => s.gizmoMode)
   const setGizmoMode = useSceneStore(s => s.setGizmoMode)
@@ -43,33 +44,57 @@ export default function ToolShelf() {
   ]
   const addCube = () => {
     const id = `obj_${Math.random().toString(36).slice(2, 8)}`
-    upsertObject({
+    executeCommand({ type: 'AddObject', payload: {
       id,
       type: 'cube',
       transform: { position: [0, 0.5, 0], rotation: [0, 0, 0], scale: [1, 1, 1] },
       props: { color: '#8b9ca7' }
-    })
+    } })
     selectObject(id)
   }
   const addSphere = () => {
     const id = `obj_${Math.random().toString(36).slice(2, 8)}`
-    upsertObject({
+    executeCommand({ type: 'AddObject', payload: {
       id,
       type: 'sphere',
       transform: { position: [0, 0.5, 0], rotation: [0, 0, 0], scale: [1, 1, 1] },
-      props: { color: '#9aa8a0' }
-    })
+      props: { color: '#9aa8a0', segments: 16 }
+    } })
     selectObject(id)
   }
   const addLight = () => {
     const id = `obj_${Math.random().toString(36).slice(2, 8)}`
-    upsertObject({
+    executeCommand({ type: 'AddObject', payload: {
       id,
       type: 'pointLight',
       transform: { position: [0, 2, 0], rotation: [0, 0, 0], scale: [1, 1, 1] },
       props: { color: '#ffffff', intensity: 1.5, distance: 0, decay: 2 }
-    })
+    } })
     selectObject(id)
+  }
+
+  const extrudeSelected = () => {
+    const face = useSceneStore.getState().selectedFace
+    const sel = face?.objectId ?? useSceneStore.getState().selectedId
+    if (!sel) return
+    const src = useSceneStore.getState().objects[sel]
+    if (!src || src.type === 'pointLight') return
+    if (face) {
+      const [nx, ny, nz] = face.normal
+      const axis = Math.abs(nx) >= Math.abs(ny) && Math.abs(nx) >= Math.abs(nz) ? 'x' : Math.abs(ny) >= Math.abs(nz) ? 'y' : 'z'
+      const sign = axis === 'x' ? Math.sign(nx || 1) : axis === 'y' ? Math.sign(ny || 1) : Math.sign(nz || 1)
+      executeCommand({ type: 'ExtrudeObject', payload: { id: sel, axis, amount: 0.5 * (sign || 1) } })
+      return
+    }
+    executeCommand({ type: 'ExtrudeObject', payload: { id: sel, axis: 'y', amount: 0.5 } })
+  }
+
+  const subdivideSelected = () => {
+    const sel = useSceneStore.getState().selectedId
+    if (!sel) return
+    const src = useSceneStore.getState().objects[sel]
+    if (!src || src.type === 'pointLight') return
+    executeCommand({ type: 'SubdivideObject', payload: { id: sel, delta: 1 } })
   }
   return (
     <nav className="v3s-toolshelf">
@@ -124,6 +149,26 @@ export default function ToolShelf() {
 
       <div className="v3s-toolshelf__divider" />
 
+      <button className="v3s-toolbtn" title="Extrude Selected" aria-label="Extrude Selected" onClick={extrudeSelected}>
+        <span className="v3s-toolbtn__icon" aria-hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 4v8" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M9 9l3 3 3-3" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M6 14h12v4H6z" stroke="currentColor" strokeWidth="1.5" opacity="0.7" />
+          </svg>
+        </span>
+      </button>
+      <button className="v3s-toolbtn" title="Subdivide Selected" aria-label="Subdivide Selected" onClick={subdivideSelected}>
+        <span className="v3s-toolbtn__icon" aria-hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="14" height="14" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="1.5" opacity="0.7" />
+          </svg>
+        </span>
+      </button>
+
+      <div className="v3s-toolshelf__divider" />
+
       {/* Duplicate / Delete */}
       <button className="v3s-toolbtn" title="Duplicate (Shift+D)" aria-label="Duplicate" onClick={() => {
         const sel = useSceneStore.getState().selectedId
@@ -131,7 +176,7 @@ export default function ToolShelf() {
         const src = useSceneStore.getState().objects[sel]
         if (!src) return
         const id = `obj_${Math.random().toString(36).slice(2, 8)}`
-        upsertObject({
+        executeCommand({ type: 'AddObject', payload: {
           id,
           type: src.type,
           transform: {
@@ -140,7 +185,7 @@ export default function ToolShelf() {
             scale: [...src.transform.scale]
           },
           props: src.props
-        })
+        } })
         selectObject(id)
       }}>
         <span className="v3s-toolbtn__icon" aria-hidden>
@@ -153,7 +198,7 @@ export default function ToolShelf() {
       <button className="v3s-toolbtn" title="Delete (Del)" aria-label="Delete" onClick={() => {
         const sel = useSceneStore.getState().selectedId
         if (!sel) return
-        useSceneStore.getState().removeObject(sel)
+        executeCommand({ type: 'RemoveObject', payload: { id: sel } })
         selectObject(null)
       }}>
         <span className="v3s-toolbtn__icon" aria-hidden>

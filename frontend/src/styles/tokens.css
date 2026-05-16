@@ -1,21 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --bg-100: #edf2f7;
-  --surface-100: #ffffff;
-  --surface-90: #f7f9fc;
-  --muted-1: #d7dee7;
-  --text-900: #0f172a;
-  --text-600: #5b6473;
-  --accent-100: #2563eb;
-  --accent-200: #7dd3fc;
-  --accent-300: #a5b4fc;
-  --presence-blue: #3b82f6;
+  /* Dark theme (default) */
+  --bg-100: #0b1220;
+  --surface-100: rgba(18, 24, 32, 0.62);
+  --surface-90: rgba(18, 24, 32, 0.42);
+  --text-900: #f8fafc;
+  --text-600: #cbd5e1;
+  --accent-100: #60a5fa;
+  --accent-200: #38bdf8;
+  --accent-300: #7c3aed;
+  --presence-blue: #60a5fa;
   --presence-orange: #f59e0b;
-  --shadow-1: 0 10px 30px rgba(15, 23, 42, 0.08);
-  --shadow-2: 0 18px 50px rgba(15, 23, 42, 0.12);
-  --grain-opacity: 0.02;
+  --muted-1: #23303b;
+  --muted-2: rgba(255, 255, 255, 0.04);
 
+  /* Typography (shared) */
   --font-stack: 'Manrope', 'Segoe UI Variable Text', 'Segoe UI', 'Aptos', sans-serif;
   --mono-stack: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
   --type-xxl: 30px;
@@ -24,14 +24,47 @@
   --type-sm: 14px;
   --type-xs: 12px;
 
+  /* Spacing (shared) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 16px;
   --space-4: 24px;
   --space-5: 32px;
 
+  /* Border radius (shared) */
   --radius-lg: 18px;
   --radius-sm: 12px;
   --radius-xs: 10px;
   --radius-pill: 999px;
+
+  /* Shadows & effects */
+  --shadow-1: 0 8px 30px rgba(2, 6, 23, 0.6);
+  --shadow-2: 0 16px 50px rgba(2, 6, 23, 0.7);
+  --focus-ring: 0 0 0 4px rgba(99, 102, 241, 0.16);
+  --disabled-100: rgba(255, 255, 255, 0.04);
+  --glass-blur: 6px;
+  --grain-opacity: 0.04;
+
+  /* Theme indicator */
+  --theme: dark;
+}
+
+[data-theme="dark"] {
+  --bg-100: #0b1220;
+  --surface-100: rgba(18, 24, 32, 0.62);
+  --surface-90: rgba(18, 24, 32, 0.42);
+  --text-900: #f8fafc;
+  --text-600: #cbd5e1;
+  --accent-100: #60a5fa;
+  --accent-200: #38bdf8;
+  --accent-300: #7c3aed;
+  --presence-blue: #60a5fa;
+  --muted-1: #23303b;
+  --muted-2: rgba(255, 255, 255, 0.03);
+  --shadow-1: 0 8px 30px rgba(2, 6, 23, 0.6);
+  --shadow-2: 0 16px 50px rgba(2, 6, 23, 0.7);
+  --focus-ring: 0 0 0 4px rgba(99, 102, 241, 0.16);
+  --disabled-100: rgba(255, 255, 255, 0.04);
+  --glass-blur: 6px;
+  --theme: dark;
 }

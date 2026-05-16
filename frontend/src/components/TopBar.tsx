@@ -1,5 +1,7 @@
 import React from 'react'
 import './TopBar.css'
+import { Button } from './ui'
+import { exportSceneAsGLTF } from '../lib/exportScene'
 
 export default function TopBar() {
   return (
@@ -7,12 +9,13 @@ export default function TopBar() {
       <div className="v3s-topbar__left">
         <strong>v3s</strong>
         <span className="v3s-topbar__divider" />
-        <button className="v3s-btn v3s-btn--ghost">File</button>
-        <button className="v3s-btn v3s-btn--ghost">Edit</button>
-        <button className="v3s-btn v3s-btn--ghost">View</button>
+        <Button variant="ghost" size="md">File</Button>
+        <Button variant="ghost" size="md">Edit</Button>
+        <Button variant="ghost" size="md">View</Button>
       </div>
       <div className="v3s-topbar__right">
-        <button className="v3s-btn v3s-btn--accent">Save</button>
+        <Button variant="ghost" size="md" onClick={() => exportSceneAsGLTF()}>Export</Button>
+        <Button variant="accent" size="md">Save</Button>
       </div>
     </header>
   )

@@ -12,55 +12,73 @@
 .v3s-properties__stack {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  height: 100%;
-}
-
-.v3s-properties__section {
-  pointer-events: auto;
+  gap: var(--space-3);
   height: 100%;
   overflow: auto;
-}
-
-.v3s-dropdown__header {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  background: rgba(15, 23, 42, 0.03);
-  border: 1px solid rgba(215, 222, 231, 0.85);
-  border-radius: var(--radius-sm);
-  color: var(--text-900);
-  font-size: var(--type-sm);
-  padding: 10px 12px;
-  cursor: pointer;
-  text-align: left;
-}
-.v3s-dropdown__chev { display: inline-block; transition: transform 160ms ease; }
-.v3s-dropdown__chev.open { transform: rotate(90deg); }
-.v3s-dropdown__content { padding: 12px 4px 14px; }
-.v3s-formgrid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-.v3s-formgrid > label {
-  color: var(--text-600);
-  font-size: var(--type-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.v3s-formrow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); }
-.v3s-formrow input {
-  height: 36px;
-  border-radius: var(--radius-xs);
-  border: 1px solid rgba(215, 222, 231, 0.95);
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--text-900);
   padding: 0 var(--space-2);
+  pointer-events: auto;
 }
 
-.v3s-formrow input[type='color'] {
-  padding: 4px;
-  min-height: 36px;
+/* Form grid for organizing inputs */
+.v3s-formgrid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
-.v3s-properties .v3s-panel {
-  height: 100%;
+/* Form row for multi-column inputs (e.g., X, Y, Z) */
+.v3s-formrow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+/* Single column form row (for color, scalar inputs) */
+.v3s-formrow--single {
+  grid-template-columns: 1fr;
+}
+
+/* Card within properties should have pointer events */
+.v3s-properties .v3s-card {
+  pointer-events: auto;
+  box-shadow: none;
+}
+
+.v3s-properties .v3s-card:hover {
+  box-shadow: none;
+}
+
+/* Input wrapper styling for better spacing */
+.v3s-properties .v3s-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+}
+
+.v3s-properties .v3s-input__label {
+  font-size: var(--type-xs);
+  font-weight: 600;
+  color: var(--text-900);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.v3s-properties .v3s-input {
+  font-size: var(--type-sm);
+}
+
+/* Placeholder/empty state text */
+.v3s-properties__empty {
+  color: var(--text-600);
+  font-size: var(--type-sm);
+  padding: var(--space-3);
+  text-align: center;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .v3s-properties .v3s-card {
+    transition: none;
+  }
 }

@@ -12,6 +12,7 @@ export default function SceneCanvas() {
   const presence = useSceneStore((s) => s.presence)
   const objects = useSceneStore((s) => s.objects)
   const selectedId = useSceneStore((s) => s.selectedId)
+  const setSelectedFace = useSceneStore((s) => s.setSelectedFace)
   const gizmoMode = useSceneStore((s) => s.gizmoMode)
   const selectObject = useSceneStore((s) => s.selectObject)
   const updateTransform = useSceneStore((s) => s.updateTransform)
@@ -37,6 +38,16 @@ export default function SceneCanvas() {
     const roughness = typeof props.roughness === 'number' ? props.roughness : 0.5
     const metalness = typeof props.metalness === 'number' ? props.metalness : 0.0
     return new THREE.MeshStandardMaterial({ color: new THREE.Color(colorHex), roughness, metalness })
+  }
+
+  const getCubeSegments = (props: Record<string, any>) => {
+    const segments = typeof props.segments === 'number' ? Math.max(1, Math.floor(props.segments)) : 1
+    return { widthSegments: segments, heightSegments: segments, depthSegments: segments }
+  }
+
+  const getSphereSegments = (props: Record<string, any>) => {
+    const segments = typeof props.segments === 'number' ? Math.max(4, Math.floor(props.segments)) : 16
+    return { widthSegments: segments, heightSegments: Math.max(4, Math.floor(segments * 0.75)) }
   }
 
   const createPointLightMesh = (o: any) => {
@@ -65,9 +76,18 @@ export default function SceneCanvas() {
     const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
     // Light neutral background to match the minimal shell
-    renderer.setClearColor(0xf1f5f9)
+    // Darkish grey clear color to match Blender-like viewport
+    renderer.setClearColor(0x1f2326)
     renderer.domElement.style.width = '100%'
     renderer.domElement.style.height = '100%'
+    // Ensure canvas fills container without introducing layout gaps
+    renderer.domElement.style.display = 'block'
+    // Prevent default touch/scroll behavior so wheel events control OrbitControls
+    renderer.domElement.style.touchAction = 'none'
+    // Prevent the page from scrolling when the pointer is over the canvas
+    const wheelHandler = (ev: WheelEvent) => { ev.preventDefault() }
+    // use non-passive so preventDefault works
+    renderer.domElement.addEventListener('wheel', wheelHandler, { passive: false })
     container.appendChild(renderer.domElement)
     rendererRef.current = renderer
 
@@ -105,11 +125,11 @@ export default function SceneCanvas() {
       if (!obj) return
       const id = (obj as any).userData?.id
       if (!id) return
-      updateTransform(id, {
-        position: [obj.position.x, obj.position.y, obj.position.z],
-        rotation: [obj.rotation.x, obj.rotation.y, obj.rotation.z],
-        scale: [obj.scale.x, obj.scale.y, obj.scale.z]
-      })
+      // Execute transform command so it is recorded in undo/redo stack
+      useSceneStore.getState().executeCommand({ type: 'UpdateTransform', payload: {
+        id,
+        transform: { position: [obj.position.x, obj.position.y, obj.position.z], rotation: [obj.rotation.x, obj.rotation.y, obj.rotation.z], scale: [obj.scale.x, obj.scale.y, obj.scale.z] }
+      } })
     })
     tControlsRef.current = tControls
 
@@ -124,14 +144,14 @@ export default function SceneCanvas() {
 
     // Grid (shader material)
     const gridUniforms = {
-      // Soft grid on a light background
-      uColor: { value: new THREE.Color(0xd7dee7) },
-      uMajorColor: { value: new THREE.Color(0x93c5fd) },
+      // Grey grid on a dark background (Blender-like)
+      uColor: { value: new THREE.Color(0x3f3f44) },
+      uMajorColor: { value: new THREE.Color(0x6b6b6f) },
       uCamPos: { value: new THREE.Vector3() },
       uScale: { value: 1.0 },
-      uThickness: { value: 0.004 },
+      uThickness: { value: 0.006 },
       uMajorStep: { value: 10.0 },
-      uMinorOpacity: { value: 0.26 },
+      uMinorOpacity: { value: 0.22 },
       uMajorOpacity: { value: 0.55 }
     }
     const gridMaterial = new THREE.ShaderMaterial({
@@ -188,9 +208,11 @@ export default function SceneCanvas() {
     const buildMesh = (o: any) => {
       let mesh: THREE.Object3D
       if (o.type === 'cube') {
-        mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), createMaterialForObject(o))
+        const segments = getCubeSegments(o.props ?? {})
+        mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1, segments.widthSegments, segments.heightSegments, segments.depthSegments), createMaterialForObject(o))
       } else if (o.type === 'sphere') {
-        mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), createMaterialForObject(o))
+        const segments = getSphereSegments(o.props ?? {})
+        mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, segments.widthSegments, segments.heightSegments), createMaterialForObject(o))
       } else if (o.type === 'pointLight') {
         mesh = createPointLightMesh(o)
       } else {
@@ -230,7 +252,8 @@ export default function SceneCanvas() {
       const meshes = Object.values(meshByIdRef.current)
       const intersects = raycaster.intersectObjects(meshes, true)
       if (intersects.length > 0) {
-        let target: THREE.Object3D | null = intersects[0].object
+        const hit = intersects[0]
+        let target: THREE.Object3D | null = hit.object
         // Walk up to find the object that carries our id (handles child hits)
         while (target && !(target as any).userData?.id) {
           target = target.parent
@@ -238,9 +261,18 @@ export default function SceneCanvas() {
         const id = (target as any)?.userData?.id
         console.log('[v3s] click hit object, id =', id)
         selectObject(id ?? null)
+        if (id && hit.face && hit.object) {
+          const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld)
+          const worldNormal = hit.face.normal.clone().applyNormalMatrix(normalMatrix).normalize()
+          setSelectedFace({
+            objectId: id,
+            normal: [worldNormal.x, worldNormal.y, worldNormal.z]
+          })
+        }
       } else {
         console.log('[v3s] click hit nothing, clearing selection')
         selectObject(null)
+        setSelectedFace(null)
       }
     }
     const handlePointerMove = (ev: MouseEvent) => {
@@ -304,7 +336,7 @@ export default function SceneCanvas() {
         const src = useSceneStore.getState().objects[sel]
         if (!src) return
         const id = `obj_${Math.random().toString(36).slice(2, 8)}`
-        useSceneStore.getState().upsertObject({
+        useSceneStore.getState().executeCommand({ type: 'AddObject', payload: {
           id,
           type: src.type,
           transform: {
@@ -313,7 +345,7 @@ export default function SceneCanvas() {
             scale: [...src.transform.scale]
           },
           props: src.props
-        })
+        } })
         useSceneStore.getState().selectObject(id)
       }
     }
@@ -332,7 +364,7 @@ export default function SceneCanvas() {
       if (e.key === 'Delete') {
         const sel = useSceneStore.getState().selectedId
         if (!sel) return
-        useSceneStore.getState().removeObject(sel)
+        useSceneStore.getState().executeCommand({ type: 'RemoveObject', payload: { id: sel } })
         useSceneStore.getState().selectObject(null)
       }
     }
@@ -386,6 +418,8 @@ export default function SceneCanvas() {
       gridMaterial.dispose()
       // renderer
       try { renderer.dispose() } catch {}
+      // remove wheel listener then remove canvas
+      try { renderer.domElement.removeEventListener('wheel', wheelHandler as EventListener) } catch {}
       if (renderer.domElement.parentNode === container) container.removeChild(renderer.domElement)
       rendererRef.current = null
       sceneRef.current = null
@@ -447,9 +481,11 @@ export default function SceneCanvas() {
       let mesh = meshes[o.id] as THREE.Object3D | undefined
       if (!mesh) {
         if (o.type === 'cube') {
-          mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), createMaterialForObject(o))
+          const segments = getCubeSegments(o.props ?? {})
+          mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1, segments.widthSegments, segments.heightSegments, segments.depthSegments), createMaterialForObject(o))
         } else if (o.type === 'sphere') {
-          mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 16), createMaterialForObject(o))
+          const segments = getSphereSegments(o.props ?? {})
+          mesh = new THREE.Mesh(new THREE.SphereGeometry(0.5, segments.widthSegments, segments.heightSegments), createMaterialForObject(o))
         } else if (o.type === 'pointLight') {
           mesh = createPointLightMesh(o)
         } else {
@@ -475,6 +511,31 @@ export default function SceneCanvas() {
             mat.color.set(colorHex)
             mat.roughness = roughness
             mat.metalness = metalness
+          }
+
+          const needsRebuild = (() => {
+            if (o.type === 'cube') {
+              const desired = getCubeSegments(props)
+              const current = mesh.geometry as THREE.BoxGeometry
+              const currentParams = current.parameters as any
+              return currentParams.widthSegments !== desired.widthSegments || currentParams.heightSegments !== desired.heightSegments || currentParams.depthSegments !== desired.depthSegments
+            }
+            const desired = getSphereSegments(props)
+            const current = mesh.geometry as THREE.SphereGeometry
+            const currentParams = current.parameters as any
+            return currentParams.widthSegments !== desired.widthSegments || currentParams.heightSegments !== desired.heightSegments
+          })()
+
+          if (needsRebuild) {
+            const oldGeometry = mesh.geometry
+            if (o.type === 'cube') {
+              const segments = getCubeSegments(props)
+              mesh.geometry = new THREE.BoxGeometry(1, 1, 1, segments.widthSegments, segments.heightSegments, segments.depthSegments)
+            } else {
+              const segments = getSphereSegments(props)
+              mesh.geometry = new THREE.SphereGeometry(0.5, segments.widthSegments, segments.heightSegments)
+            }
+            oldGeometry.dispose()
           }
         }
       } else if (o.type === 'pointLight') {

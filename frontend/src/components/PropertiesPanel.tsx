@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import './PropertiesPanel.css'
-import Panel from './Panel'
+import { Card, Input } from './ui'
 import { useSceneStore } from '../state/sceneStore'
 
 export default function PropertiesPanel() {
@@ -39,177 +39,222 @@ export default function PropertiesPanel() {
   }
   return (
     <aside className="v3s-properties">
-      <Panel className="v3s-properties__section">
-        <div className="v3s-properties__stack">
-          <button className="v3s-dropdown__header" onClick={() => toggle('transform')} aria-expanded={open.transform}>
-            <span className={`v3s-dropdown__chev ${open.transform ? 'open' : ''}`}>▸</span>
-            Transform
-          </button>
-          {open.transform && (
-            <div className="v3s-dropdown__content">
-              {obj ? (
-              <div className="v3s-formgrid">
-                <label>Position</label>
-                <div className="v3s-formrow">
-                  <input type="number" step="0.01" value={transform.position[0]} onChange={(e)=>setVal('position',0,parseFloat(e.target.value))} />
-                  <input type="number" step="0.01" value={transform.position[1]} onChange={(e)=>setVal('position',1,parseFloat(e.target.value))} />
-                  <input type="number" step="0.01" value={transform.position[2]} onChange={(e)=>setVal('position',2,parseFloat(e.target.value))} />
-                </div>
-                <label>Rotation (rad)</label>
-                <div className="v3s-formrow">
-                  <input type="number" step="0.01" value={transform.rotation[0]} onChange={(e)=>setVal('rotation',0,parseFloat(e.target.value))} />
-                  <input type="number" step="0.01" value={transform.rotation[1]} onChange={(e)=>setVal('rotation',1,parseFloat(e.target.value))} />
-                  <input type="number" step="0.01" value={transform.rotation[2]} onChange={(e)=>setVal('rotation',2,parseFloat(e.target.value))} />
-                </div>
-                <label>Scale</label>
-                <div className="v3s-formrow">
-                  <input type="number" step="0.01" value={transform.scale[0]} onChange={(e)=>setVal('scale',0,parseFloat(e.target.value))} />
-                  <input type="number" step="0.01" value={transform.scale[1]} onChange={(e)=>setVal('scale',1,parseFloat(e.target.value))} />
-                  <input type="number" step="0.01" value={transform.scale[2]} onChange={(e)=>setVal('scale',2,parseFloat(e.target.value))} />
-                </div>
+      <div className="v3s-properties__stack">
+        <Card 
+          title="Transform" 
+          collapsible 
+          defaultCollapsed={false}
+        >
+          {obj ? (
+            <div className="v3s-formgrid">
+              <div className="v3s-formrow">
+                <Input 
+                  id="pos-x"
+                  label="Position X" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.position[0]} 
+                  onChange={(e)=>setVal('position',0,parseFloat(e.target.value))} 
+                />
+                <Input 
+                  id="pos-y"
+                  label="Position Y" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.position[1]} 
+                  onChange={(e)=>setVal('position',1,parseFloat(e.target.value))} 
+                />
+                <Input 
+                  id="pos-z"
+                  label="Position Z" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.position[2]} 
+                  onChange={(e)=>setVal('position',2,parseFloat(e.target.value))} 
+                />
               </div>
-              ) : (
-                <div style={{ color: 'var(--text-600)' }}>Select an object to edit transforms.</div>
-              )}
+              <div className="v3s-formrow">
+                <Input 
+                  id="rot-x"
+                  label="Rotation X (rad)" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.rotation[0]} 
+                  onChange={(e)=>setVal('rotation',0,parseFloat(e.target.value))} 
+                />
+                <Input 
+                  id="rot-y"
+                  label="Rotation Y (rad)" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.rotation[1]} 
+                  onChange={(e)=>setVal('rotation',1,parseFloat(e.target.value))} 
+                />
+                <Input 
+                  id="rot-z"
+                  label="Rotation Z (rad)" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.rotation[2]} 
+                  onChange={(e)=>setVal('rotation',2,parseFloat(e.target.value))} 
+                />
+              </div>
+              <div className="v3s-formrow">
+                <Input 
+                  id="scl-x"
+                  label="Scale X" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.scale[0]} 
+                  onChange={(e)=>setVal('scale',0,parseFloat(e.target.value))} 
+                />
+                <Input 
+                  id="scl-y"
+                  label="Scale Y" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.scale[1]} 
+                  onChange={(e)=>setVal('scale',1,parseFloat(e.target.value))} 
+                />
+                <Input 
+                  id="scl-z"
+                  label="Scale Z" 
+                  type="number" 
+                  step={0.01} 
+                  value={transform.scale[2]} 
+                  onChange={(e)=>setVal('scale',2,parseFloat(e.target.value))} 
+                />
+              </div>
             </div>
+          ) : (
+            <div style={{ color: 'var(--text-600)' }}>Select an object to edit transforms.</div>
           )}
+        </Card>
 
-          {!isLight && (
-            <>
-              <button className="v3s-dropdown__header" onClick={() => toggle('material')} aria-expanded={open.material}>
-                <span className={`v3s-dropdown__chev ${open.material ? 'open' : ''}`}>▸</span>
-                Material
-              </button>
-              {open.material && (
-                <div className="v3s-dropdown__content">
-                  {obj ? (
-                    <div className="v3s-formgrid">
-                      <label>Base Color</label>
-                      <div className="v3s-formrow">
-                        <input
-                          type="color"
-                          value={material.baseColor}
-                          onChange={(e) => setMaterialVal('baseColor', e.target.value)}
-                        />
-                      </div>
-                      <label>Roughness</label>
-                      <div className="v3s-formrow">
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="1"
-                          value={material.roughness}
-                          onChange={(e) => {
-                            const v = parseFloat(e.target.value)
-                            if (Number.isNaN(v)) return
-                            setMaterialVal('roughness', v)
-                          }}
-                        />
-                      </div>
-                      <label>Metalness</label>
-                      <div className="v3s-formrow">
-                        <input
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          max="1"
-                          value={material.metalness}
-                          onChange={(e) => {
-                            const v = parseFloat(e.target.value)
-                            if (Number.isNaN(v)) return
-                            setMaterialVal('metalness', v)
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ color: 'var(--text-600)' }}>Select an object to edit material.</div>
-                  )}
-                </div>
-              )}
-            </>
-          )}
+        {!isLight && (
+          <Card 
+            title="Material" 
+            collapsible 
+            defaultCollapsed={true}
+          >
+            {obj ? (
+              <div className="v3s-formgrid">
+                <Input 
+                  id="base-color"
+                  label="Base Color" 
+                  type="color" 
+                  value={material.baseColor} 
+                  onChange={(e) => setMaterialVal('baseColor', e.target.value)} 
+                />
+                <Input 
+                  id="roughness"
+                  label="Roughness" 
+                  type="number" 
+                  step={0.01} 
+                  min={0} 
+                  max={1} 
+                  value={material.roughness} 
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (Number.isNaN(v)) return
+                    setMaterialVal('roughness', v)
+                  }} 
+                />
+                <Input 
+                  id="metalness"
+                  label="Metalness" 
+                  type="number" 
+                  step={0.01} 
+                  min={0} 
+                  max={1} 
+                  value={material.metalness} 
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (Number.isNaN(v)) return
+                    setMaterialVal('metalness', v)
+                  }} 
+                />
+              </div>
+            ) : (
+              <div style={{ color: 'var(--text-600)' }}>Select an object to edit material.</div>
+            )}
+          </Card>
+        )}
 
-          {isLight && (
-            <>
-              <button className="v3s-dropdown__header" onClick={() => toggle('lighting')} aria-expanded={open.lighting}>
-                <span className={`v3s-dropdown__chev ${open.lighting ? 'open' : ''}`}>▸</span>
-                Light
-              </button>
-              {open.lighting && obj && (
-                <div className="v3s-dropdown__content">
-                  <div className="v3s-formgrid">
-                    <label>Color</label>
-                    <div className="v3s-formrow">
-                      <input
-                        type="color"
-                        value={(obj.props?.color as string) ?? '#ffffff'}
-                        onChange={(e) => upsertObject({
-                          ...obj,
-                          props: { ...(obj.props ?? {}), color: e.target.value }
-                        })}
-                      />
-                    </div>
-                    <label>Intensity</label>
-                    <div className="v3s-formrow">
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="10"
-                        value={typeof obj.props?.intensity === 'number' ? obj.props.intensity : 1.5}
-                        onChange={(e) => {
-                          const v = parseFloat(e.target.value)
-                          if (Number.isNaN(v)) return
-                          upsertObject({
-                            ...obj,
-                            props: { ...(obj.props ?? {}), intensity: v }
-                          })
-                        }}
-                      />
-                    </div>
-                    <label>Distance</label>
-                    <div className="v3s-formrow">
-                      <input
-                        type="number"
-                        step="0.5"
-                        min="0"
-                        value={typeof obj.props?.distance === 'number' ? obj.props.distance : 0}
-                        onChange={(e) => {
-                          const v = parseFloat(e.target.value)
-                          if (Number.isNaN(v)) return
-                          upsertObject({
-                            ...obj,
-                            props: { ...(obj.props ?? {}), distance: v }
-                          })
-                        }}
-                      />
-                    </div>
-                    <label>Decay</label>
-                    <div className="v3s-formrow">
-                      <input
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        value={typeof obj.props?.decay === 'number' ? obj.props.decay : 2}
-                        onChange={(e) => {
-                          const v = parseFloat(e.target.value)
-                          if (Number.isNaN(v)) return
-                          upsertObject({
-                            ...obj,
-                            props: { ...(obj.props ?? {}), decay: v }
-                          })
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </Panel>
+        {isLight && (
+          <Card 
+            title="Light" 
+            collapsible 
+            defaultCollapsed={true}
+          >
+            {obj ? (
+              <div className="v3s-formgrid">
+                <Input 
+                  id="light-color"
+                  label="Color" 
+                  type="color" 
+                  value={(obj.props?.color as string) ?? '#ffffff'} 
+                  onChange={(e) => upsertObject({
+                    ...obj,
+                    props: { ...(obj.props ?? {}), color: e.target.value }
+                  })} 
+                />
+                <Input 
+                  id="intensity"
+                  label="Intensity" 
+                  type="number" 
+                  step={0.1} 
+                  min={0} 
+                  max={10} 
+                  value={typeof obj.props?.intensity === 'number' ? obj.props.intensity : 1.5} 
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (Number.isNaN(v)) return
+                    upsertObject({
+                      ...obj,
+                      props: { ...(obj.props ?? {}), intensity: v }
+                    })
+                  }} 
+                />
+                <Input 
+                  id="distance"
+                  label="Distance" 
+                  type="number" 
+                  step={0.5} 
+                  min={0} 
+                  value={typeof obj.props?.distance === 'number' ? obj.props.distance : 0} 
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (Number.isNaN(v)) return
+                    upsertObject({
+                      ...obj,
+                      props: { ...(obj.props ?? {}), distance: v }
+                    })
+                  }} 
+                />
+                <Input 
+                  id="decay"
+                  label="Decay" 
+                  type="number" 
+                  step={0.1} 
+                  min={0} 
+                  value={typeof obj.props?.decay === 'number' ? obj.props.decay : 2} 
+                  onChange={(e) => {
+                    const v = parseFloat(e.target.value)
+                    if (Number.isNaN(v)) return
+                    upsertObject({
+                      ...obj,
+                      props: { ...(obj.props ?? {}), decay: v }
+                    })
+                  }} 
+                />
+              </div>
+            ) : (
+              <div style={{ color: 'var(--text-600)' }}>Select an object to edit lighting.</div>
+            )}
+          </Card>
+        )}
+      </div>
     </aside>
   )
 }

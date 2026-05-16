@@ -1,0 +1,166 @@
+/* Button primitive component styles - tokens-based */
+
+.v3s-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  min-height: 40px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-stack);
+  font-size: var(--type-md);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 120ms ease-out;
+  white-space: nowrap;
+  position: relative;
+  outline: none;
+
+  /* Focus management */
+  &:focus-visible {
+    box-shadow: var(--focus-ring), 0 0 0 2px var(--surface-100);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  &:disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+    background-color: var(--disabled-100);
+    color: var(--text-600);
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: more) {
+    border: 2px solid currentColor;
+    
+    &:focus-visible {
+      outline-width: 3px;
+    }
+  }
+}
+
+/* Size variants */
+.v3s-btn--sm {
+  padding: var(--space-1) var(--space-2);
+  min-height: 32px;
+  font-size: var(--type-sm);
+}
+
+.v3s-btn--md {
+  padding: var(--space-2) var(--space-3);
+  min-height: 40px;
+  font-size: var(--type-md);
+}
+
+.v3s-btn--lg {
+  padding: var(--space-3) var(--space-4);
+  min-height: 48px;
+  font-size: var(--type-md);
+}
+
+/* Variant: default (neutral) */
+.v3s-btn--default {
+  background-color: var(--surface-100);
+  color: var(--text-900);
+  border: 1px solid var(--muted-1);
+  box-shadow: var(--shadow-1);
+
+  &:hover:not(:disabled) {
+    background-color: var(--surface-90);
+    border-color: var(--accent-100);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+/* Variant: accent (primary action) */
+.v3s-btn--accent {
+  background: linear-gradient(135deg, var(--accent-100) 0%, var(--accent-200) 100%);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-1);
+  font-weight: 700;
+
+  &:hover:not(:disabled) {
+    box-shadow: var(--shadow-2);
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(-1px);
+  }
+}
+
+/* Variant: ghost (minimal) */
+.v3s-btn--ghost {
+  background-color: transparent;
+  color: var(--accent-100);
+  border: none;
+  transition: all 120ms ease-out;
+
+  &:hover:not(:disabled) {
+    background-color: var(--muted-2);
+    color: var(--accent-100);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--muted-1);
+  }
+}
+
+/* Loading state spinner */
+.v3s-btn__spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: v3s-spin 0.6s linear infinite;
+}
+
+@keyframes v3s-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Icon and text spacing */
+.v3s-btn__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.v3s-btn__text {
+  display: inline;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .v3s-btn {
+    transition: none;
+  }
+
+  .v3s-btn__spinner {
+    animation: none;
+    border-right-color: currentColor;
+  }
+
+  .v3s-btn--default:hover:not(:disabled),
+  .v3s-btn--accent:hover:not(:disabled),
+  .v3s-btn--ghost:hover:not(:disabled) {
+    transform: none;
+  }
+}

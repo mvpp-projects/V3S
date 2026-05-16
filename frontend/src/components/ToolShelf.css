@@ -10,8 +10,8 @@
   gap: 8px;
   padding: 10px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.8);
-  border: 1px solid rgba(215, 222, 231, 0.85);
+  background: rgba(18, 24, 32, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.16);
   box-shadow: var(--shadow-2);
   backdrop-filter: blur(18px) saturate(1.2);
   pointer-events: auto;
@@ -20,7 +20,7 @@
 .v3s-toolshelf__divider {
   width: 60%;
   height: 1px;
-  background: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.08);
   margin: 2px 0;
 }
 
@@ -38,13 +38,13 @@
 }
 
 .v3s-toolbtn:hover {
-  background: rgba(37, 99, 235, 0.07);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  background: rgba(96, 165, 250, 0.12);
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.24);
 }
 
 .v3s-toolbtn--active {
-  background: rgba(37, 99, 235, 0.12);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.14);
+  background: rgba(96, 165, 250, 0.18);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
 }
 
 .v3s-toolbtn--active .v3s-toolbtn__icon {

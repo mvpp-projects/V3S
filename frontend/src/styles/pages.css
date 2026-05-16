@@ -19,62 +19,104 @@
 .auth-card {
   width: min(480px, 100%);
   background: var(--surface-100);
-  border: 1px solid rgba(215, 222, 231, 0.85);
+  border: 1px solid rgba(215, 222, 231, 0.5);
   border-radius: 24px;
   box-shadow: var(--shadow-2);
-  padding: 32px;
+  padding: 40px 32px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 24px;
   backdrop-filter: blur(18px);
 }
 
 .auth-card h1,
 .scenes-header h1 {
-  margin: 0;
-  font-size: clamp(30px, 4vw, 42px);
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  margin: 0 0 4px 0;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
 }
 
 .auth-card p,
 .scenes-header p,
 .scene-card p {
   margin: 0;
-  color: var(--text-600);
+  color: var(--text-900);
+  font-size: 15px;
+  line-height: 1.5;
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .auth-form label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  color: var(--text-600);
-  font-size: var(--type-sm);
+  gap: 8px;
+  color: var(--text-900);
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.auth-form input,
-.create-scene input {
-  border: 1px solid var(--muted-1);
-  border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.92);
+.auth-form input {
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
   padding: 12px 14px;
-  color: var(--text-900);
+  font-size: 15px;
+  color: #ffffff;
+  caret-color: #ffffff;
   outline: none;
-  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.auth-form input {
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.create-scene input {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 10px;
+  background: rgba(18, 24, 32, 0.68);
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-900);
+  caret-color: var(--text-900);
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.auth-form input:-webkit-autofill,
+.auth-form input:-webkit-autofill:hover,
+.auth-form input:-webkit-autofill:focus,
+.auth-form input:-webkit-autofill:active,
+.auth-form input:-webkit-autofill:hover,
+.auth-form input:-webkit-autofill:focus,
+.auth-form input:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.08) inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.create-scene input:-webkit-autofill,
+.create-scene input:-webkit-autofill:hover,
+.create-scene input:-webkit-autofill:focus,
+.create-scene input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text-900);
+  box-shadow: 0 0 0 1000px rgba(18, 24, 32, 0.68) inset;
+  transition: background-color 9999s ease-out 0s;
 }
 
 .auth-form input:focus,
 .create-scene input:focus,
 .v3s-formrow input:focus {
-  border-color: rgba(37, 99, 235, 0.6);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
-  transform: translateY(-1px);
+  border-color: var(--accent-100);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
 }
 
 .auth-form button,
@@ -82,13 +124,15 @@
 .scene-card button,
 .auth-card button,
 .ghost {
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, #1d4ed8, #2563eb);
-  color: #f8fafc;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent-100);
+  color: white;
   padding: 12px 16px;
+  font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
-  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease, border-color 120ms ease;
+  transition: background 120ms ease, box-shadow 120ms ease;
 }
 
 .auth-form button:hover,
@@ -96,8 +140,8 @@
 .scene-card button:hover,
 .auth-card button:hover,
 .ghost:hover {
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-1);
+  background: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
 .ghost {
@@ -109,9 +153,10 @@
 .auth-divider {
   text-align: center;
   color: var(--text-600);
-  font-size: var(--type-sm);
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  margin: 8px 0;
 }
 
 .auth-error {

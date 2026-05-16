@@ -1,0 +1,120 @@
+/* Card/Panel primitive component styles - tokens-based */
+
+.v3s-card {
+  background-color: var(--surface-100);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  backdrop-filter: blur(var(--glass-blur));
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  transition: all 150ms ease-out;
+}
+
+.v3s-card:hover {
+  box-shadow: var(--shadow-2);
+}
+
+.v3s-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  gap: var(--space-2);
+}
+
+.v3s-card__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.v3s-card__title {
+  margin: 0;
+  font-family: var(--font-stack);
+  font-size: var(--type-md);
+  font-weight: 700;
+  color: var(--text-900);
+  line-height: 1.4;
+}
+
+.v3s-card__subtitle {
+  margin: 0;
+  font-family: var(--font-stack);
+  font-size: var(--type-xs);
+  color: var(--text-600);
+  line-height: 1.3;
+}
+
+.v3s-card__content {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Collapsible toggle button */
+.v3s-card__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-xs);
+  border: none;
+  background-color: transparent;
+  color: var(--text-600);
+  cursor: pointer;
+  transition: all 120ms ease-out;
+  outline: none;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-900);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--focus-ring);
+  }
+}
+
+.v3s-card__toggle-icon {
+  width: 20px;
+  height: 20px;
+  transition: transform 200ms ease-out;
+}
+
+.v3s-card__toggle[aria-expanded="false"] .v3s-card__toggle-icon {
+  transform: rotate(-90deg);
+}
+
+/* Nested cards */
+.v3s-card .v3s-card {
+  margin-top: var(--space-2);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .v3s-card__header {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .v3s-card__content {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .v3s-card,
+  .v3s-card__toggle,
+  .v3s-card__toggle-icon {
+    transition: none;
+  }
+
+  .v3s-card__toggle[aria-expanded="false"] .v3s-card__toggle-icon {
+    transform: none;
+  }
+}

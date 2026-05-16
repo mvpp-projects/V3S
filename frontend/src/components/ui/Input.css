@@ -1,0 +1,147 @@
+/* Input primitive component styles - tokens-based */
+
+.v3s-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.v3s-input__label {
+  font-family: var(--font-stack);
+  font-size: var(--type-sm);
+  font-weight: 600;
+  color: var(--text-900);
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+.v3s-input {
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--muted-1);
+  background-color: var(--surface-100);
+  color: var(--text-900);
+  caret-color: var(--text-900);
+  font-family: var(--font-stack);
+  font-size: var(--type-md);
+  transition: all 120ms ease-out;
+  outline: none;
+
+  /* Placeholder styling */
+  &::placeholder {
+    color: var(--text-600);
+    opacity: 0.7;
+  }
+
+  /* Focus state - prominent and visible */
+  &:focus {
+    border-color: var(--accent-100);
+    box-shadow: var(--focus-ring), inset 0 0 0 1px var(--accent-100);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  /* Hover state (when not focused or disabled) */
+  &:hover:not(:focus):not(:disabled) {
+    border-color: var(--accent-200);
+    background-color: var(--surface-90);
+  }
+
+  /* Disabled state */
+  &:disabled {
+    background-color: var(--disabled-100);
+    color: var(--text-600);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Error state */
+  &.v3s-input--error,
+  .v3s-input--error & {
+    border-color: #dc2626;
+
+    &:focus {
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12), inset 0 0 0 1px #dc2626;
+    }
+  }
+
+  /* Read-only state */
+  &:read-only {
+    background-color: var(--surface-90);
+    color: var(--text-600);
+    border-color: var(--muted-2);
+  }
+
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus,
+  &:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--text-900);
+    box-shadow: 0 0 0 1000px var(--surface-100) inset;
+    transition: background-color 9999s ease-out 0s;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: more) {
+    border-width: 2px;
+    
+    &:focus {
+      outline-width: 3px;
+    }
+  }
+}
+
+/* Error message styling */
+.v3s-input__error {
+  font-family: var(--font-stack);
+  font-size: var(--type-xs);
+  color: #dc2626;
+  margin-top: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.v3s-input__error::before {
+  content: '⚠';
+  display: inline-block;
+  font-size: var(--type-sm);
+}
+
+/* Text input specific */
+input[type="text"].v3s-input,
+input[type="email"].v3s-input,
+input[type="password"].v3s-input,
+input[type="url"].v3s-input,
+input[type="search"].v3s-input {
+  /* Inherited styles from .v3s-input */
+}
+
+/* Number input specific */
+input[type="number"].v3s-input {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Search input specific */
+input[type="search"].v3s-input::-webkit-search-decoration,
+input[type="search"].v3s-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .v3s-input {
+    transition: none;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .v3s-input {
+    min-height: 48px;
+    font-size: var(--type-md);
+  }
+}
